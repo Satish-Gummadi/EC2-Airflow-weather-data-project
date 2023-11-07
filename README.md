@@ -6,5 +6,5 @@ You can gothrough my commmands text to understand different steps and connection
 The output after creating the DAGs will look something like the image below:
 <img width="841" alt="DAG-screenshot" src="https://github.com/Satish-Gummadi/EC2-Airflow-weather-data-project/assets/111731023/33702ede-899e-42b5-a354-e233d1494942">
 
-reference: https://youtu.be/uhQ54Dgp6To?si=jB1cw5ETnYX6uIqu
+Project reference: https://youtu.be/uhQ54Dgp6To?si=jB1cw5ETnYX6uIqu
 
