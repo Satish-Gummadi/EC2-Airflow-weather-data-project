@@ -1,0 +1,169 @@
+
+Create an EC2 instance on AWS console
+
+---------
+
+In security Inbound rules add 
+
+-> your IP address
+-> port 8080
+
+only after doing this we can access airflow through our Public IPv4 DNS in EC2.
+
+---------
+
+SSH client
+
+ssh -i "EC2-VScode-SSH-key.pem" ubuntu@ec2-12-345-67-890.compute-1.amazonaws.com
+
+
+---
+to configure EC2 on VS Studio
+
+1) Install SSH remote extension on VS code
+
+2) Then click on left bottom icon similar to >< and click on Connect to Host
+
+3) Click on configure host 
+
+4) Select the first path specified. Here copy and edit the following
+
+# Read more about SSH config files: https://linux.die.net/man/5/ssh_config
+Host weather-data-project
+    HostName 1.23.45.678
+    User ubuntu
+    IdentityFile C:\Users\Admin\Downloads\EC2-VScode-SSH-key.pem
+
+5) After this save the file
+
+6) Now repete step 2 and this time select the new host created in config file.
+
+7) Select the linux machine and other details. This will connect our VS to EC2
+
+8) Now open the new terminal to check the connection.
+
+Note: 1) If you get any error, it can be either due to config file or due to key.
+In such case try oprning SSH settings in VS code and add config file path over there.
+Also try keeping the key in smaller paths to avoid key detection errors.
+
+2) In case you are stopping and starting the EC2 instance, the public IP will change. Hence you have to
+update the Hostname in cofig file in VS code everytime you stop and start EC2 instance (when connecting
+to same instance).
+
+
+---------------------
+
+-- commands used in terminal
+
+mkdir project
+
+cd project
+
+touch main.py
+
+sudo main.py
+
+
+---------------
+
+sudo apt update
+
+sudo apt install python3-pip
+
+sudo apt install python3.10-venv
+
+python3 -m venv airflow_venv
+
+source airflow_venv/bin/activate
+
+-- inside virtual environment use
+
+sudo pip install pandas
+
+sudo pip install s3fs
+
+pip install requests
+
+sudo pip install apache-airflow
+
+airflow standalone
+
+-- now copy the username: admin and password from the terminal and use them in browser for website localhost:8080
+
+username: admin
+password: -------------------
+
+-- airflow Standalone is for developement purpose only. Do not use this for production
+
+------------------------------
+
+To access Airflow web interface
+
+navigate to our EC2 instance
+
+copy Public IPv4 DNS and paste it in browser. Add :8080 at the end. The complete url will look like this:
+http://ec2-12-345-678-901.compute-1.amazonaws.com:8080
+
+Enter username and password
+
+----------------
+
+API calls:
+
+https://api.openweathermap.org/data/2.5/weather?q=guntur&appid=dcce08df2f68d12345c080a8270e5ca8
+
+
+-----------------
+In Airflow
+
+Admin >> connections >> +
+
+add a connection with:
+	connection id: weathermap_api
+	connection type: HTTP
+	Host: https://api.openweathermap.org
+
+And Save it
+
+--------
+
+Go to VS code and open airflow.cfg. Just check and confirm that dags_folder = /home/ubuntu/airflow/dags
+
+-------
+
+Edit all the dags as mentioned in code
+
+------
+
+-- Create an S3 bucket to store our dataframe as csv in that location
+
+Once done we have to do following things
+
+1) Create a IAM role with S3 access and EC2 access, and assign this role to EC2
+	For this go into Our instance >> Actions >> Security >> Modify IAM role >> Create new IAM role
+
+2) We have to create an Access key
+	To create secret access key go to our account >> Security credentials >> Access key >> Create Access key
+
+Access key: --------------------------
+
+Secret access key: -----------------------------
+
+3) Navigate to our EC2 instance, install AWS CLI in our EC2 instance (code below) and then configure our access key and secret in EC2.
+
+sudo apt install awscli
+
+aws configure
+
+-- enter key and secret and keep remaining default.
+
+aws sts get-session-token
+
+-- output(key,secret and token) of the above we will add to our dag code.
+
+4) On done we then need to change the save location in our transform function and also specify the credentials crom config file in aws inside our transform function.
+
+
+s3 bucket name: weatherdata-airflow-ec2-s3-project
+
+
